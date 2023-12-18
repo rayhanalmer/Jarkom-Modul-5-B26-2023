@@ -28,11 +28,16 @@ Setelah pandai mengatur jalur-jalur khusus, kalian diminta untuk membantu North 
 Agar topologi yang kalian buat dapat mengakses keluar, kalian diminta untuk mengkonfigurasi Aura menggunakan iptables, tetapi tidak ingin menggunakan MASQUERADE.
 
 ### Penyelesaian
+![image](https://github.com/rayhanalmer/Jarkom-Modul-5-B26-2023/assets/103409628/9e0c13d5-63eb-42f7-9eef-402dcff1fd4e)  
+![image](https://github.com/rayhanalmer/Jarkom-Modul-5-B26-2023/assets/103409628/2600abec-0267-45cd-afdf-98b4498bd02e)  
+
 
 ## Soal 2
 Kalian diminta untuk melakukan drop semua TCP dan UDP kecuali port 8080 pada TCP.
 
 ### Penyelesaian
+![image](https://github.com/rayhanalmer/Jarkom-Modul-5-B26-2023/assets/103409628/99a69618-5f9c-4336-a826-99021df16d5f)  
+![image](https://github.com/rayhanalmer/Jarkom-Modul-5-B26-2023/assets/103409628/d91102ca-49c2-468d-b2e6-02dbc03bcab3)  
 
 ## Soal 3
 Kepala Suku North Area meminta kalian untuk membatasi DHCP dan DNS Server hanya dapat dilakukan ping oleh maksimal 3 device secara bersamaan, selebihnya akan di drop.
