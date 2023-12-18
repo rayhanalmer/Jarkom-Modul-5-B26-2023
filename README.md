@@ -43,6 +43,11 @@ Kalian diminta untuk melakukan drop semua TCP dan UDP kecuali port 8080 pada TCP
 Kepala Suku North Area meminta kalian untuk membatasi DHCP dan DNS Server hanya dapat dilakukan ping oleh maksimal 3 device secara bersamaan, selebihnya akan di drop.
 
 ### Penyelesaian
+![image](https://github.com/rayhanalmer/Jarkom-Modul-5-B26-2023/assets/103409628/00bfe60f-145c-471e-a243-1c055fe630a5)  
+![image](https://github.com/rayhanalmer/Jarkom-Modul-5-B26-2023/assets/103409628/3eb3dff4-c63b-4883-91c0-f4e037b9e1df)  
+![image](https://github.com/rayhanalmer/Jarkom-Modul-5-B26-2023/assets/103409628/c1813681-fde0-4ad0-8700-05551d6b226a)  
+![image](https://github.com/rayhanalmer/Jarkom-Modul-5-B26-2023/assets/103409628/6be2466f-a6b0-4532-be47-20990dc47429)  
+
 
 ## Soal 4
 Lakukan pembatasan sehingga koneksi SSH pada Web Server hanya dapat dilakukan oleh masyarakat yang berada pada GrobeForest.
