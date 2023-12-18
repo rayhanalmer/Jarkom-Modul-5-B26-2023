@@ -53,6 +53,8 @@ Kepala Suku North Area meminta kalian untuk membatasi DHCP dan DNS Server hanya 
 Lakukan pembatasan sehingga koneksi SSH pada Web Server hanya dapat dilakukan oleh masyarakat yang berada pada GrobeForest.
 
 ### Penyelesaian
+![image](https://github.com/rayhanalmer/Jarkom-Modul-5-B26-2023/assets/103409628/1705bb6f-781c-46c4-b925-d8ec26d50d1f)  
+![image](https://github.com/rayhanalmer/Jarkom-Modul-5-B26-2023/assets/103409628/565fb1c8-ebe7-459e-b5f7-ad70c064b5ad)  
 
 ## Soal 5
 Selain itu, akses menuju WebServer hanya diperbolehkan saat jam kerja yaitu Senin-Jumat pada pukul 08.00-16.00.
