@@ -7,6 +7,23 @@
 |  Nur Azizah                        |5025211252|
 |  Faiz Haq Noviandra Ciptadi Putra  |5025211132|
 
+## Soal
+Setelah pandai mengatur jalur-jalur khusus, kalian diminta untuk membantu North Area menjaga wilayah mereka dan kalian dengan senang hati membantunya karena ini merupakan tugas terakhir.  
+
+- (A) Tugas pertama, buatlah peta wilayah sesuai berikut ini:  
+
+
+![image](https://github.com/rayhanalmer/Jarkom-Modul-5-B26-2023/assets/103409628/03291954-d06f-4d26-a595-39ec015b2100)
+
+
+- (B) Untuk menghitung rute-rute yang diperlukan, gunakan perhitungan dengan metode VLSM. Buat juga pohonnya, dan lingkari subnet yang dilewati.  
+
+
+- (C) Kemudian buatlah rute sesuai dengan pembagian IP yang kalian lakukan.  
+
+
+- (D) Tugas berikutnya adalah memberikan ip pada subnet SchwerMountain, LaubHills, TurkRegion, dan GrobeForest menggunakan bantuan DHCP.  
+
 ## Soal 1
 Agar topologi yang kalian buat dapat mengakses keluar, kalian diminta untuk mengkonfigurasi Aura menggunakan iptables, tetapi tidak ingin menggunakan MASQUERADE.
 
