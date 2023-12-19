@@ -204,7 +204,22 @@ Agar topologi yang kalian buat dapat mengakses keluar, kalian diminta untuk meng
 
 ### Penyelesaian
 
+```
+ETH0_IP=$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+
+iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source $ETH0_IP
+```
+
 Penjelasan:  
+- `ip -4 addr show eth0`: Ini adalah perintah untuk menampilkan informasi alamat IP untuk antarmuka jaringan `eth0`.
+- `grep -oP '(?<=inet\s)\d+(\.\d+){3}'`: Ini menggunakan `grep` dengan opsi `-oP` yang mengizinkan penggunaan ekspresi reguler Perl (`P`). Ekspresi reguler ini mencari pola yang sesuai dengan alamat IPv4 (`\d+(\.\d+){3}`) yang terdapat setelah kata "inet" di output sebelumnya. Hasilnya akan berupa alamat IP dari antarmuka `eth0`.
+- `ETH0_IP=$(...)`: Menggunakan perintah substitusi untuk menetapkan hasil eksekusi perintah di dalam tanda kurung ke dalam variabel `ETH0_IP`.
+- `iptables`: Ini adalah perintah untuk mengonfigurasi tabel iptables.
+- `-t nat`: Menentukan tabel yang akan diubah, dalam hal ini, tabel "nat" (Network Address Translation).
+- `-A POSTROUTING`: Menambahkan aturan ke chain POSTROUTING, yang akan dijalankan setelah proses routing.
+- `-o eth0`: Spesifikasi bahwa aturan ini akan diterapkan hanya untuk paket yang keluar melalui antarmuka jaringan `eth0`.
+- `-j SNAT`: Menentukan target aturan, di sini, SNAT (Source NAT), yang digunakan untuk mengganti alamat sumber paket.
+- `--to-source $ETH0_IP`: Menentukan alamat IP yang akan digunakan sebagai alamat sumber yang baru. Nilainya diambil dari variabel `ETH0_IP`, yang berisi alamat IP dari antarmuka `eth0` yang ditemukan sebelumnya.
 
 Output:  
   
@@ -217,7 +232,38 @@ Kalian diminta untuk melakukan drop semua TCP dan UDP kecuali port 8080 pada TCP
 
 ### Penyelesaian
 
-Penjelasan  
+```
+iptables -F
+
+iptables -A INPUT -p icmp -j ACCEPT
+
+iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
+
+iptables -A INPUT -p tcp -j DROP
+
+iptables -A INPUT -p udp -j DROP
+```
+
+Penjelasan:  
+- `iptables -F`
+`-F`: Perintah ini digunakan untuk menghapus semua aturan (rules) yang telah ada sebelumnya di semua chain iptables.  
+- `iptables -A INPUT -p icmp -j ACCEPT`
+`-A INPUT`: Menambahkan aturan ke chain INPUT, yang digunakan untuk mengatur paket yang menuju ke sistem.  
+`-p icmp`: Menentukan protokol yang diizinkan, dalam hal ini ICMP (ping).  
+`-j ACCEPT`: Menentukan target aturan, yaitu ACCEPT, yang berarti paket ICMP akan diterima.  
+- `iptables -A INPUT -p tcp --dport 8080 -j ACCEPT`
+`-A INPUT`: Menambahkan aturan ke chain INPUT.  
+`-p tcp`: Menentukan protokol yang diizinkan, yaitu TCP.  
+`--dport 8080`: Menentukan port tujuan (destination port) yang diizinkan, dalam hal ini, port 8080.  
+`-j ACCEPT`: Menentukan target aturan, yaitu ACCEPT, yang berarti paket TCP dengan port tujuan 8080 akan diterima.  
+- `iptables -A INPUT -p tcp -j DROP`
+`-A INPUT`: Menambahkan aturan ke chain INPUT.  
+`-p tcp`: Menentukan protokol yang diizinkan, yaitu TCP.  
+`-j DROP`: Menentukan target aturan, yaitu DROP, yang berarti semua paket TCP akan ditolak.  
+- `iptables -A INPUT -p udp -j DROP`
+`-A INPUT`: Menambahkan aturan ke chain INPUT.  
+`-p udp`: Menentukan protokol yang diizinkan, yaitu UDP.  
+`-j DROP`: Menentukan target aturan, yaitu DROP, yang berarti semua paket UDP akan ditolak.  
 
 Output:  
   
@@ -228,6 +274,12 @@ Output:
 Kepala Suku North Area meminta kalian untuk membatasi DHCP dan DNS Server hanya dapat dilakukan ping oleh maksimal 3 device secara bersamaan, selebihnya akan di drop.
 
 ### Penyelesaian
+
+```
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+iptables -A INPUT -p icmp -m connlimit --connlimit-above 3 --connlimit-mask 0 -j DROP
+```
 
 Penjelasan  
 
@@ -243,6 +295,11 @@ Lakukan pembatasan sehingga koneksi SSH pada Web Server hanya dapat dilakukan ol
 
 ### Penyelesaian
 
+```
+iptables -A INPUT -p tcp --dport 22 -s 192.191.8.0/22 -j ACCEPT
+
+iptables -A INPUT -p tcp --dport 22 -j DROP
+```
 Penjelasan  
 
 Output:  
