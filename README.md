@@ -338,6 +338,30 @@ Selain itu, akses menuju WebServer hanya diperbolehkan saat jam kerja yaitu Seni
 
 ### Penyelesaian
 
+```
+iptables -A INPUT -p tcp --dport 22 -s 192.191.8.0/22 -m time --timestart 08:00 --timestop 16:00 --weekdays Mon,Tue,Wed,Thu,Fri -j ACCEPT
+
+iptables -A INPUT -p tcp --dport 22 -j DROP
+```
+
+Penjelasan:  
+- `iptables -A INPUT -p tcp --dport 22 -s 192.191.8.0/22 -m time --timestart 08:00 --timestop 16:00 --weekdays Mon,Tue,Wed,Thu,Fri -j ACCEPT`  
+`-A INPUT`: Menambahkan aturan ke chain INPUT, yang digunakan untuk mengatur paket yang menuju ke sistem.  
+`-p tcp`: Menentukan protokol yang diizinkan, yaitu TCP.  
+`--dport 22`: Menentukan port tujuan (destination port), dalam hal ini, port 22 (SSH).  
+`-s 192.191.8.0/22`: Menentukan alamat IP sumber yang diizinkan, dalam hal ini, rentang alamat IP dari 192.191.8.0 hingga 192.191.11.255.  
+`-m time --timestart 08:00 --timestop 16:00 --weekdays Mon,Tue,Wed,Thu,Fri`: Menggunakan modul time untuk menentukan waktu di mana aturan ini berlaku. Aturan ini hanya berlaku pada waktu mulai dari pukul 08:00 hingga 16:00 pada hari Senin sampai Jumat.  
+`-j ACCEPT`: Menentukan target aturan, yaitu ACCEPT, yang berarti paket TCP dengan port tujuan 22, berasal dari alamat IP yang diizinkan, dan sesuai dengan jadwal waktu yang ditentukan akan diterima.  
+- `iptables -A INPUT -p tcp --dport 22 -j DROP`  
+`-A INPUT`: Menambahkan aturan ke chain INPUT.  
+`-p tcp`: Menentukan protokol yang diizinkan, yaitu TCP.  
+`--dport 22`: Menentukan port tujuan (destination port), dalam hal ini, port 22 (SSH).  
+`-j DROP`: Menentukan target aturan, yaitu DROP, yang berarti semua paket TCP dengan port tujuan 22 akan ditolak.  
+
+Output:  
+  
+![image](https://github.com/rayhanalmer/Jarkom-Modul-5-B26-2023/assets/103409628/d683e64c-38ba-45e9-9ec8-5f540e8a321d)  
+
 ## Soal 6
 Lalu, karena ternyata terdapat beberapa waktu di mana network administrator dari WebServer tidak bisa stand by, sehingga perlu ditambahkan rule bahwa akses pada hari Senin - Kamis pada jam 12.00 - 13.00 dilarang (istirahat maksi cuy) dan akses di hari Jumat pada jam 11.00 - 13.00 juga dilarang (maklum, Jumatan rek).
 
