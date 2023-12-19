@@ -211,15 +211,17 @@ iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source $ETH0_IP
 ```
 
 Penjelasan:  
-- `ip -4 addr show eth0`: Ini adalah perintah untuk menampilkan informasi alamat IP untuk antarmuka jaringan `eth0`.
-- `grep -oP '(?<=inet\s)\d+(\.\d+){3}'`: Ini menggunakan `grep` dengan opsi `-oP` yang mengizinkan penggunaan ekspresi reguler Perl (`P`). Ekspresi reguler ini mencari pola yang sesuai dengan alamat IPv4 (`\d+(\.\d+){3}`) yang terdapat setelah kata "inet" di output sebelumnya. Hasilnya akan berupa alamat IP dari antarmuka `eth0`.
-- `ETH0_IP=$(...)`: Menggunakan perintah substitusi untuk menetapkan hasil eksekusi perintah di dalam tanda kurung ke dalam variabel `ETH0_IP`.
-- `iptables`: Ini adalah perintah untuk mengonfigurasi tabel iptables.
-- `-t nat`: Menentukan tabel yang akan diubah, dalam hal ini, tabel "nat" (Network Address Translation).
-- `-A POSTROUTING`: Menambahkan aturan ke chain POSTROUTING, yang akan dijalankan setelah proses routing.
-- `-o eth0`: Spesifikasi bahwa aturan ini akan diterapkan hanya untuk paket yang keluar melalui antarmuka jaringan `eth0`.
-- `-j SNAT`: Menentukan target aturan, di sini, SNAT (Source NAT), yang digunakan untuk mengganti alamat sumber paket.
-- `--to-source $ETH0_IP`: Menentukan alamat IP yang akan digunakan sebagai alamat sumber yang baru. Nilainya diambil dari variabel `ETH0_IP`, yang berisi alamat IP dari antarmuka `eth0` yang ditemukan sebelumnya.
+- `ETH0_IP=$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(.\d+){3}')`  
+`ip -4 addr show eth0`: Ini adalah perintah untuk menampilkan informasi alamat IP untuk antarmuka jaringan `eth0`.  
+`grep -oP '(?<=inet\s)\d+(\.\d+){3}'`: Ini menggunakan `grep` dengan opsi `-oP` yang mengizinkan penggunaan ekspresi reguler Perl (`P`). Ekspresi reguler ini mencari pola yang sesuai dengan alamat IPv4 (`\d+(\.\d+){3}`) yang terdapat setelah kata "inet" di output sebelumnya. Hasilnya akan berupa alamat IP dari antarmuka `eth0`.  
+`ETH0_IP=$(...)`: Menggunakan perintah substitusi untuk menetapkan hasil eksekusi perintah di dalam tanda kurung ke dalam variabel `ETH0_IP`.  
+- `iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source $ETH0_IP`  
+`iptables`: Ini adalah perintah untuk mengonfigurasi tabel iptables.  
+`-t nat`: Menentukan tabel yang akan diubah, dalam hal ini, tabel "nat" (Network Address Translation).  
+`-A POSTROUTING`: Menambahkan aturan ke chain POSTROUTING, yang akan dijalankan setelah proses routing.  
+`-o eth0`: Spesifikasi bahwa aturan ini akan diterapkan hanya untuk paket yang keluar melalui antarmuka jaringan `eth0`.  
+`-j SNAT`: Menentukan target aturan, di sini, SNAT (Source NAT), yang digunakan untuk mengganti alamat sumber paket.  
+`--to-source $ETH0_IP`: Menentukan alamat IP yang akan digunakan sebagai alamat sumber yang baru. Nilainya diambil dari variabel `ETH0_IP`, yang berisi alamat IP dari antarmuka `eth0` yang ditemukan sebelumnya.  
 
 Output:  
   
@@ -245,22 +247,22 @@ iptables -A INPUT -p udp -j DROP
 ```
 
 Penjelasan:  
-- `iptables -F`
+- `iptables -F`  
 `-F`: Perintah ini digunakan untuk menghapus semua aturan (rules) yang telah ada sebelumnya di semua chain iptables.  
-- `iptables -A INPUT -p icmp -j ACCEPT`
+- `iptables -A INPUT -p icmp -j ACCEPT`  
 `-A INPUT`: Menambahkan aturan ke chain INPUT, yang digunakan untuk mengatur paket yang menuju ke sistem.  
 `-p icmp`: Menentukan protokol yang diizinkan, dalam hal ini ICMP (ping).  
 `-j ACCEPT`: Menentukan target aturan, yaitu ACCEPT, yang berarti paket ICMP akan diterima.  
-- `iptables -A INPUT -p tcp --dport 8080 -j ACCEPT`
+- `iptables -A INPUT -p tcp --dport 8080 -j ACCEPT`  
 `-A INPUT`: Menambahkan aturan ke chain INPUT.  
 `-p tcp`: Menentukan protokol yang diizinkan, yaitu TCP.  
 `--dport 8080`: Menentukan port tujuan (destination port) yang diizinkan, dalam hal ini, port 8080.  
 `-j ACCEPT`: Menentukan target aturan, yaitu ACCEPT, yang berarti paket TCP dengan port tujuan 8080 akan diterima.  
-- `iptables -A INPUT -p tcp -j DROP`
+- `iptables -A INPUT -p tcp -j DROP`  
 `-A INPUT`: Menambahkan aturan ke chain INPUT.  
 `-p tcp`: Menentukan protokol yang diizinkan, yaitu TCP.  
 `-j DROP`: Menentukan target aturan, yaitu DROP, yang berarti semua paket TCP akan ditolak.  
-- `iptables -A INPUT -p udp -j DROP`
+- `iptables -A INPUT -p udp -j DROP`  
 `-A INPUT`: Menambahkan aturan ke chain INPUT.  
 `-p udp`: Menentukan protokol yang diizinkan, yaitu UDP.  
 `-j DROP`: Menentukan target aturan, yaitu DROP, yang berarti semua paket UDP akan ditolak.  
@@ -281,7 +283,19 @@ iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -A INPUT -p icmp -m connlimit --connlimit-above 3 --connlimit-mask 0 -j DROP
 ```
 
-Penjelasan  
+Penjelasan:  
+- `iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT`  
+`-A INPUT`: Menambahkan aturan ke chain INPUT, yang digunakan untuk mengatur paket yang menuju ke sistem.  
+`-m state`: Menggunakan modul state, yang memungkinkan kita untuk menentukan aturan berdasarkan status koneksi.  
+`--state ESTABLISHED,RELATED`: Menentukan bahwa aturan ini akan diterapkan pada paket-paket yang memiliki status koneksi "ESTABLISHED" atau "RELATED". Paket "ESTABLISHED" adalah paket yang terkait dengan koneksi yang sudah ada, sedangkan "RELATED" adalah paket yang terkait dengan koneksi yang sudah ada, tetapi bukan bagian dari koneksi itu sendiri (misalnya, paket ICMP yang terkait dengan koneksi TCP).  
+`-j ACCEPT`: Menentukan target aturan, yaitu ACCEPT, yang berarti paket-paket dengan status koneksi "ESTABLISHED" atau "RELATED" akan diterima.  
+- `iptables -A INPUT -p icmp -m connlimit --connlimit-above 3 --connlimit-mask 0 -j DROP`  
+`-A INPUT`: Menambahkan aturan ke chain INPUT.  
+`-p icmp`: Menentukan protokol yang diizinkan, yaitu ICMP.  
+`-m connlimit`: Menggunakan modul connlimit, yang memungkinkan kita untuk menentukan aturan berdasarkan jumlah koneksi.  
+`--connlimit-above 3`: Menentukan bahwa aturan ini akan diterapkan pada paket ICMP yang melebihi 3 koneksi.  
+`--connlimit-mask 0`: Menentukan bahwa seluruh alamat IP akan dihitung, tanpa pembatasan berdasarkan subnet (mask 0).  
+`-j DROP`: Menentukan target aturan, yaitu DROP, yang berarti paket-paket ICMP yang melebihi batasan koneksi akan ditolak.  
 
 Output:  
   
@@ -300,7 +314,19 @@ iptables -A INPUT -p tcp --dport 22 -s 192.191.8.0/22 -j ACCEPT
 
 iptables -A INPUT -p tcp --dport 22 -j DROP
 ```
-Penjelasan  
+
+Penjelasan:  
+- `iptables -A INPUT -p tcp --dport 22 -s 192.191.8.0/22 -j ACCEPT`  
+`-A INPUT`: Menambahkan aturan ke chain INPUT, yang digunakan untuk mengatur paket yang menuju ke sistem.  
+`-p tcp`: Menentukan protokol yang diizinkan, yaitu TCP.  
+`--dport 22`: Menentukan port tujuan (destination port), dalam hal ini, port 22 (SSH).  
+`-s 192.191.8.0/22`: Menentukan alamat IP sumber yang diizinkan, dalam hal ini, rentang alamat IP dari 192.191.8.0 hingga 192.191.11.255.  
+`-j ACCEPT`: Menentukan target aturan, yaitu ACCEPT, yang berarti paket TCP dengan port tujuan 22 dan berasal dari alamat IP yang diizinkan akan diterima.  
+- `iptables -A INPUT -p tcp --dport 22 -j DROP`  
+`-A INPUT`: Menambahkan aturan ke chain INPUT.  
+`-p tcp`: Menentukan protokol yang diizinkan, yaitu TCP.  
+`--dport 22`: Menentukan port tujuan (destination port), dalam hal ini, port 22 (SSH).  
+`-j DROP`: Menentukan target aturan, yaitu DROP, yang berarti semua paket TCP dengan port tujuan 22 akan ditolak.  
 
 Output:  
   
