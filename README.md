@@ -367,6 +367,32 @@ Lalu, karena ternyata terdapat beberapa waktu di mana network administrator dari
 
 ### Penyelesaian
 
+```
+iptables -A INPUT -p tcp --dport 22 -s 192.191.8.0/22 -m time --timestart 12:00 --timestop 13:00 --weekdays Mon,Tue,Wed,Thu -j DROP
+
+iptables -A INPUT -p tcp --dport 22 -s 192.191.8.0/22 -m time --timestart 11:00 --timestop 13:00 --weekdays Fri -j DROP
+```
+
+Penjelasan:  
+- `iptables -A INPUT -p tcp --dport 22 -s 192.191.8.0/22 -m time --timestart 12:00 --timestop 13:00 --weekdays Mon,Tue,Wed,Thu -j DROP`  
+`-A INPUT`: Menambahkan aturan ke chain INPUT, yang digunakan untuk mengatur paket yang menuju ke sistem.  
+`-p tcp`: Menentukan protokol yang diizinkan, yaitu TCP.  
+`--dport 22`: Menentukan port tujuan (destination port), dalam hal ini, port 22 (SSH).  
+`-s 192.191.8.0/22`: Menentukan alamat IP sumber yang diizinkan, dalam hal ini, rentang alamat IP dari 192.191.8.0 hingga 192.191.11.255.  
+`-m time --timestart 12:00 --timestop 13:00 --weekdays Mon,Tue,Wed,Thu`: Menggunakan modul time untuk menentukan waktu di mana aturan ini berlaku. Aturan ini hanya berlaku pada waktu mulai dari pukul 12:00 hingga 13:00 pada hari Senin sampai Kamis.  
+`-j DROP`: Menentukan target aturan, yaitu DROP, yang berarti paket TCP dengan port tujuan 22, berasal dari alamat IP yang diizinkan, dan sesuai dengan jadwal waktu yang ditentukan akan ditolak.  
+- `iptables -A INPUT -p tcp --dport 22 -s 192.191.8.0/22 -m time --timestart 11:00 --timestop 13:00 --weekdays Fri -j DROP`  
+`-A INPUT`: Menambahkan aturan ke chain INPUT.  
+`-p tcp`: Menentukan protokol yang diizinkan, yaitu TCP.  
+`--dport 22`: Menentukan port tujuan (destination port), dalam hal ini, port 22 (SSH).  
+`-s 192.191.8.0/22`: Menentukan alamat IP sumber yang diizinkan, dalam hal ini, rentang alamat IP dari 192.191.8.0 hingga 192.191.11.255.  
+`-m time --timestart 11:00 --timestop 13:00 --weekdays Fri`: Menggunakan modul time untuk menentukan waktu di mana aturan ini berlaku. Aturan ini hanya berlaku pada waktu mulai dari pukul 11:00 hingga 13:00 pada hari Jumat.  
+`-j DROP`: Menentukan target aturan, yaitu DROP, yang berarti paket TCP dengan port tujuan 22, berasal dari alamat IP yang diizinkan, dan sesuai dengan jadwal waktu yang ditentukan akan ditolak.  
+
+Output:  
+  
+
+
 ## Soal 7
 Karena terdapat 2 WebServer, kalian diminta agar setiap client yang mengakses Sein dengan Port 80 akan didistribusikan secara bergantian pada Sein dan Stark secara berurutan dan request dari client yang mengakses Stark dengan port 443 akan didistribusikan secara bergantian pada Sein dan Stark secara berurutan.
 
