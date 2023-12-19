@@ -24,6 +24,51 @@ Setelah pandai mengatur jalur-jalur khusus, kalian diminta untuk membantu North 
 
 - (D) Tugas berikutnya adalah memberikan ip pada subnet SchwerMountain, LaubHills, TurkRegion, dan GrobeForest menggunakan bantuan DHCP.  
 
+### Penyelesaian
+Setelah topologi berhasil dibuat pada GNS3, langkah selanjutnya yang dilakukan adalah membuat rute dan melakukan subnetting. Berikut adalah hasil dari pembuatan rute serta subnetting yang sudah dilakukan:  
+- Topology  
+
+- Rute  
+![image](https://github.com/rayhanalmer/Jarkom-Modul-5-B26-2023/assets/103409628/91bf21d5-5a39-4f75-becd-f42aa8f8b643)  
+
+- Tree VLSM  
+![image](https://github.com/rayhanalmer/Jarkom-Modul-5-B26-2023/assets/103409628/6527579d-e7f2-4507-a190-d27f3ca3a61d)  
+
+- Pembagian Network ID & Broadcast  
+![image](https://github.com/rayhanalmer/Jarkom-Modul-5-B26-2023/assets/103409628/f78b9e06-8bed-4063-a687-312a0cdf041e)  
+
+- Pembagian IP Node  
+![image](https://github.com/rayhanalmer/Jarkom-Modul-5-B26-2023/assets/103409628/3ba8e036-2d64-44d2-a289-4b7ef0ba3009)  
+
+- Konfigurasi Node  
+Setelah melakukan subnetting, maka langkah selanjutnya adalah melakukan kongfigurasi untuk setiap node. Berikut adalah kongfigurasi untuk tiap node dalam topologi pada soal praktikum:
+
+  - Aura  
+
+  - Revolte  
+
+  - Richter  
+  
+  - Fern  
+  
+  - SchwerMountain  
+  
+  - Himmels  
+  
+  - LaubHills  
+  
+  - Frieren  
+  
+  - Stark  
+  
+  - Heiter  
+  
+  - TurkRegion  
+  
+  - Sein  
+  
+  - GrobeForest  
+
 ## Soal 1
 Agar topologi yang kalian buat dapat mengakses keluar, kalian diminta untuk mengkonfigurasi Aura menggunakan iptables, tetapi tidak ingin menggunakan MASQUERADE.
 
