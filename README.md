@@ -391,17 +391,55 @@ Penjelasan:
 
 Output:  
   
-
+![image](https://github.com/rayhanalmer/Jarkom-Modul-5-B26-2023/assets/103409628/a3ee0abf-859a-44d0-bede-744176395cab)  
 
 ## Soal 7
 Karena terdapat 2 WebServer, kalian diminta agar setiap client yang mengakses Sein dengan Port 80 akan didistribusikan secara bergantian pada Sein dan Stark secara berurutan dan request dari client yang mengakses Stark dengan port 443 akan didistribusikan secara bergantian pada Sein dan Stark secara berurutan.
 
 ### Penyelesaian
 
+```
+iptables -A PREROUTING -t nat -p tcp --dport 80 -d 192.191.8.2 -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 192.191.14.138
+
+iptables -A PREROUTING -t nat -p tcp --dport 80 -d 192.191.8.2 -j DNAT --to-destination 192.191.14.138
+
+iptables -A PREROUTING -t nat -p tcp --dport 443 -d 192.191.14.138 -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 192.191.8.2
+
+iptables -A PREROUTING -t nat -p tcp --dport 443 -d 192.191.14.138 -j DNAT --to-destination 192.191.8.2
+```
+
+Kemudian dapat dilakukan testing dengan cara membuka koneksi pada webserver yaitu sein dan stark dengan syntax berikut  
+
+Untuk port 80    
+`while true; do nc -l -p 80 -c 'echo "ini sein"'; done` dan  
+`while true; do nc -l -p 80 -c 'echo "ini stark"'; done.`  
+  
+Untuk port 443  
+`while true; do nc -l -p 443 -c 'echo "ini sein"'; done` dan  
+`while true; do nc -l -p 443 -c 'echo "ini stark"'; done`  
+
+Output:  
+  
+
+
 ## Soal 8
 Karena berbeda koalisi politik, maka subnet dengan masyarakat yang berada pada Revolte dilarang keras mengakses WebServer hingga masa pencoblosan pemilu kepala suku 2024 berakhir. Masa pemilu (hingga pemungutan dan penghitungan suara selesai) kepala suku bersamaan dengan masa pemilu Presiden dan Wakil Presiden Indonesia 2024.
 
 ### Penyelesaian
+
+Di web server (Sein dan Stark), lakukan seperti di bawah ini  
+```
+iptables -A INPUT -s 192.191.14.150 -p tcp --dport 80 -m time --datestart 2023-12-14 --datestop 2024-06-26 -j DROP
+```
+
+Lalu, lakukan testing di Revolte dengan mengganti date teerlebih dahulu dan memasukkan syntax berikut  
+```
+nmap 192.191.8.2 80
+nmap 192.191.14.138 80
+```
+
+Output:  
+
 
 ## Soal 9
 Sadar akan adanya potensial saling serang antar kubu politik, maka WebServer harus dapat secara otomatis memblokir  alamat IP yang melakukan scanning port dalam jumlah banyak (maksimal 20 scan port) di dalam selang waktu 10 menit.  
@@ -409,8 +447,39 @@ Sadar akan adanya potensial saling serang antar kubu politik, maka WebServer har
 
 ### Penyelesaian
 
+Lakukan setting di wweb server (sein dan stark) dan masukkan configurasi sebagai berikut  
+```
+iptables -N scan_port
+
+iptables -A INPUT -m recent --name scan_port --update --seconds 600 --hitcount 20 -j DROP
+
+iptables -A FORWARD -m recent --name scan_port --update --seconds 600 --hitcount 20 -j DROP
+
+iptables -A INPUT -m recent --name scan_port --set -j ACCEPT
+
+iptables -A FORWARD -m recent --name scan_port --set -j ACCEPT
+```
+
+Lalu, lakukan setting dengan menjalankan syntax berikut di GrobeForest  
+```
+ping 192.191.8.2
+ping 192.191.14.138
+```
+
+Output:  
+
+
 ## Soal 10
 Karena kepala suku ingin tau paket apa saja yang di-drop, maka di setiap node server dan router ditambahkan logging paket yang di-drop dengan standard syslog level.
 
 ### Penyelesaian
+
+Masukkan syntax berikut ke setiap node server (DNS, DHCP, Web) dan setiap router  
+```
+iptables -A INPUT  -j LOG --log-level debug --log-prefix 'Dropped Packet' -m limit --limit 1/second --limit-burst 10
+```
+
+Output:  
+
+
 
