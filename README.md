@@ -408,6 +408,22 @@ iptables -A PREROUTING -t nat -p tcp --dport 443 -d 192.191.14.138 -m statistic 
 iptables -A PREROUTING -t nat -p tcp --dport 443 -d 192.191.14.138 -j DNAT --to-destination 192.191.8.2
 ```
 
+Penjelasan:  
+- `iptables -A PREROUTING -t nat -p tcp --dport 80 -d 192.191.8.2 -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 192.191.14.138`  
+`-A PREROUTING`: Menambahkan aturan ke chain PREROUTING pada tabel nat. Chain ini digunakan untuk mengatur paket sebelum melewati proses routing.  
+`-t nat`: Menentukan tabel yang akan diubah, dalam hal ini, tabel "nat" (Network Address Translation).  
+`-p tcp`: Menentukan protokol yang diizinkan, yaitu TCP.  
+`--dport 80`: Menentukan port tujuan (destination port), dalam hal ini, port 80 (HTTP).  
+`-d 192.191.8.2`: Menentukan alamat tujuan (destination address), dalam hal ini, alamat IP 192.191.8.2.  
+`-m statistic --mode nth --every 2 --packet 0`: Menggunakan modul statistic untuk memilih paket berdasarkan urutan statistik. Dalam hal ini, setiap paket kedua (every 2) yang sesuai dengan kondisi akan diambil (packet 0).  
+`-j DNAT --to-destination 192.191.14.138`: Menentukan target aturan, yaitu DNAT (Destination NAT), yang digunakan untuk mengganti alamat tujuan paket. Alamat IP tujuan akan diubah menjadi 192.191.14.138.  
+- `iptables -A PREROUTING -t nat -p tcp --dport 80 -d 192.191.8.2 -j DNAT --to-destination 192.191.14.138`  
+Parameter dan fungsinya sama seperti pada baris pertama, namun tanpa modul `statistic`.  
+- `iptables -A PREROUTING -t nat -p tcp --dport 443 -d 192.191.14.138 -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 192.191.8.2`  
+Parameter dan fungsinya sama seperti pada baris pertama, namun dengan port tujuan 443 (HTTPS) dan alamat tujuan awal 192.191.14.138.  
+- `iptables -A PREROUTING -t nat -p tcp --dport 443 -d 192.191.14.138 -j DNAT --to-destination 192.191.8.2`  
+Parameter dan fungsinya sama seperti pada baris kedua, namun dengan port tujuan 443 (HTTPS) dan alamat tujuan awal 192.191.14.138.  
+
 Kemudian dapat dilakukan testing dengan cara membuka koneksi pada webserver yaitu sein dan stark dengan syntax berikut  
 
 Untuk port 80    
@@ -431,6 +447,14 @@ Di web server (Sein dan Stark), lakukan seperti di bawah ini
 ```
 iptables -A INPUT -s 192.191.14.150 -p tcp --dport 80 -m time --datestart 2023-12-14 --datestop 2024-06-26 -j DROP
 ```
+
+Penjelasan:  
+`-A INPUT`: Menambahkan aturan ke chain INPUT, yang digunakan untuk mengatur paket yang menuju ke sistem.  
+`-s 192.191.14.150`: Menentukan alamat IP sumber yang akan diaplikasikan aturan, dalam hal ini, alamat IP 192.191.14.150.  
+`-p tcp`: Menentukan protokol yang diizinkan, yaitu TCP.  
+`--dport 80`: Menentukan port tujuan (destination port), dalam hal ini, port 80 (HTTP).  
+`-m time --datestart 2023-12-14 --datestop 2024-06-26`: Menggunakan modul time untuk menentukan aturan berdasarkan tanggal. Aturan ini hanya berlaku dari tanggal 14 Desember 2023 hingga 26 Juni 2024.  
+`-j DROP`: Menentukan target aturan, yaitu DROP, yang berarti paket dari alamat IP sumber 192.191.14.150, dengan protokol TCP dan tujuan port 80, yang sesuai dengan jadwal waktu yang ditentukan, akan ditolak.  
 
 Lalu, lakukan testing di Revolte dengan mengganti date teerlebih dahulu dan memasukkan syntax berikut  
 ```
@@ -460,6 +484,24 @@ iptables -A INPUT -m recent --name scan_port --set -j ACCEPT
 iptables -A FORWARD -m recent --name scan_port --set -j ACCEPT
 ```
 
+Penjelasan:  
+- `iptables -N scan_port`  
+`-N scan_port`: Membuat chain baru dengan nama "scan_port" (penanda atau tempat untuk aturan-aturan khusus).  
+- `iptables -A INPUT -m recent --name scan_port --update --seconds 600 --hitcount 20 -j DROP`  
+`-A INPUT`: Menambahkan aturan ke chain INPUT, yang digunakan untuk mengatur paket yang menuju ke sistem.  
+`-m recent --name scan_port --update --seconds 600 --hitcount 20`: Menggunakan modul recent untuk mendeteksi aktivitas pemindaian port. Aturan ini akan men-drop (DROP) paket yang mencoba melakukan pemindaian port dengan frekuensi lebih dari 20 kali dalam waktu 600 detik.  
+`-j DROP`: Menentukan target aturan, yaitu DROP, yang berarti paket yang memenuhi kondisi di atas akan ditolak.  
+- `iptables -A FORWARD -m recent --name scan_port --update --seconds 600 --hitcount 20 -j DROP`  
+`-A FORWARD`: Menambahkan aturan ke chain FORWARD, yang digunakan untuk mengatur paket yang dialihkan melalui sistem.  
+Parameter dan fungsinya sama seperti pada baris sebelumnya, namun untuk chain FORWARD. Ini berarti paket yang mencoba melakukan pemindaian port pada paket yang dialihkan juga akan ditolak.  
+- `iptables -A INPUT -m recent --name scan_port --set -j ACCEPT`  
+`-A INPUT`: Menambahkan aturan ke chain INPUT.  
+`-m recent --name scan_port --set`: Menggunakan modul recent untuk menetapkan penanda "scan_port" pada paket yang baru datang.  
+`-j ACCEPT`: Menentukan target aturan, yaitu ACCEPT, yang berarti paket yang memenuhi kondisi di atas akan diterima.  
+- `iptables -A FORWARD -m recent --name scan_port --set -j ACCEPT`  
+`-A FORWARD`: Menambahkan aturan ke chain FORWARD.  
+Parameter dan fungsinya sama seperti pada baris sebelumnya, namun untuk chain FORWARD. Ini berarti paket yang mencoba melakukan pemindaian port pada paket yang dialihkan juga akan diizinkan.  
+
 Lalu, lakukan setting dengan menjalankan syntax berikut di GrobeForest  
 ```
 ping 192.191.8.2
@@ -478,6 +520,13 @@ Masukkan syntax berikut ke setiap node server (DNS, DHCP, Web) dan setiap router
 ```
 iptables -A INPUT  -j LOG --log-level debug --log-prefix 'Dropped Packet' -m limit --limit 1/second --limit-burst 10
 ```
+
+Penjelasan:  
+`-A INPUT`: Menambahkan aturan ke chain INPUT, yang digunakan untuk mengatur paket yang menuju ke sistem.  
+`-j LOG`: Menentukan target aturan, yaitu LOG, yang berarti paket yang memenuhi kondisi aturan akan dicatat dalam log sistem.  
+`--log-level debug`: Menentukan level log yang akan digunakan. Dalam hal ini, level log diatur sebagai "debug". Level log ini menunjukkan tingkat detail log yang akan dicatat.  
+`--log-prefix 'Dropped Packet'`: Menentukan awalan atau prefiks untuk pesan log. Dalam hal ini, pesan log akan diawali dengan teks "Dropped Packet".  
+`-m limit --limit 1/second --limit-burst 10`: Menggunakan modul limit untuk mengontrol seberapa sering log dibuat. Parameter-parameter ini menentukan bahwa setiap detiknya hanya satu log yang akan dibuat (1/second), dan jika ada lebih dari satu log yang mencoba dibuat dalam satu detik, sebanyak 10 log yang melebihi akan diperbolehkan (limit-burst 10).  
 
 Output:  
 
